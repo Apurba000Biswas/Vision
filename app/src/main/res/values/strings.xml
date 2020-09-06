@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Vision</string>
+    <string name="emojify_me">Emojify Me</string>
+
+    <string name="permission_denied">Permission denied</string>
+    <string name="error">Error finding image</string>
+    <string name="saved_message">Image Saved at %1$s</string>
+</resources>
