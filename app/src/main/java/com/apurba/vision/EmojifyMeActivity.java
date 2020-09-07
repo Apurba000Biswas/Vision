@@ -127,17 +127,24 @@ public class EmojifyMeActivity extends AppCompatActivity {
      * Method for processing the captured image and setting it to the TextView.
      */
     private void processAndSetImage() {
-
         // Resample the saved image to fit the ImageView
         mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
 
         // Detect the faces and overlay the appropriate emoji
-        //mResultsBitmap = Emojifier.detectFacesandOverlayEmoji(this, mResultsBitmap);
-        Emojifier.detectFaces(mResultsBitmap);
+        Emojifier.detectFacesAndOverlayEmoji(mResultsBitmap, this, new Emojifier.EmojifierListener() {
+            @Override
+            public void onComplete(Bitmap resultBitmap) {
+                mResultsBitmap = resultBitmap;
 
-        // Set the new bitmap to the ImageView
-        ImageView imageView = findViewById(R.id.captured_image);
-        imageView.setImageBitmap(mResultsBitmap);
+                ImageView imageView = findViewById(R.id.captured_image);
+                imageView.setImageBitmap(mResultsBitmap);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Toast.makeText(EmojifyMeActivity.this, "Error", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void saveImage(View view) {
