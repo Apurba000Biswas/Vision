@@ -140,10 +140,7 @@ class BarCodeScanActivity : AppCompatActivity() {
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else filesDir
     }
-
-//    private fun getOutputDirectory(): File {
-//        return BitmapUtils.createTempImageFile(this)
-//    }
+    
 
     override fun onDestroy() {
         super.onDestroy()
