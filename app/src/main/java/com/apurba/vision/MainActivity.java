@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onQRCodScanClicked(View view) {
-        Intent intent = new Intent(this, EmojifyMeActivity.class);
+        Intent intent = new Intent(this, BarCodeScanActivity.class);
         startActivity(intent);
     }
 }

@@ -23,7 +23,8 @@ import java.io.IOException;
 public class EmojifyMeActivity extends AppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int REQUEST_STORAGE_PERMISSION = 1;
+    private static final int REQUEST_PERMISSION_CODE = 12;
+    private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
 
     private static final String FILE_PROVIDER_AUTHORITY = "com.apurba.fileprovider";
 
@@ -36,37 +37,42 @@ public class EmojifyMeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emojify_me);
 
-        checkPermissionAndLunchCamera();
-    }
-
-    private void checkPermissionAndLunchCamera(){
-        // Check for the external storage permission
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_STORAGE_PERMISSION);
-        } else {
+        if (!isAllPermissionGranted()){
+            requestPermission();
+        }else{
             launchCamera();
         }
+    }
+
+    private boolean isAllPermissionGranted(){
+        for (String requiredPermission : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(this,
+                    requiredPermission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void requestPermission(){
+        ActivityCompat.requestPermissions(this,
+                REQUIRED_PERMISSIONS,
+                REQUEST_PERMISSION_CODE);
     }
 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_STORAGE_PERMISSION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    launchCamera();
-                } else {
-                    GotoSettingsDialog dialog = new GotoSettingsDialog();
-                    dialog.show(getSupportFragmentManager(), dialog.getTag());
-                }
-                break;
+
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+            if (isAllPermissionGranted()) {
+                launchCamera();
+            } else {
+
+                GotoSettingsDialog dialog = new GotoSettingsDialog();
+                dialog.show(getSupportFragmentManager(), dialog.getTag());
             }
         }
     }
@@ -169,6 +175,10 @@ public class EmojifyMeActivity extends AppCompatActivity {
 
     public void reLaunchCamera(View view) {
         BitmapUtils.deleteImageFile(this, mTempPhotoPath);
-        checkPermissionAndLunchCamera();
+        if (isAllPermissionGranted()){
+            launchCamera();
+        }else{
+            requestPermission();
+        }
     }
 }

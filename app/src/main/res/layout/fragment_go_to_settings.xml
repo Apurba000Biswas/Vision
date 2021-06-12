@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_16sdp"
-        android:text="To use this feature you need to grant storage permission"
+        android:text="To use this feature you need to grant storage and camera permission"
         android:textColor="@android:color/black"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintEnd_toEndOf="parent"
