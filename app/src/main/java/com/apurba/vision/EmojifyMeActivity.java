@@ -63,8 +63,8 @@ public class EmojifyMeActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     launchCamera();
                 } else {
-
-                    Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
+                    GotoSettingsDialog dialog = new GotoSettingsDialog();
+                    dialog.show(getSupportFragmentManager(), dialog.getTag());
                 }
                 break;
             }
@@ -123,9 +123,7 @@ public class EmojifyMeActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Method for processing the captured image and setting it to the TextView.
-     */
+
     private void processAndSetImage() {
         // Resample the saved image to fit the ImageView
         mResultsBitmap = BitmapUtils.resamplePic(this, mTempPhotoPath);
@@ -135,6 +133,11 @@ public class EmojifyMeActivity extends AppCompatActivity {
             @Override
             public void onComplete(Bitmap resultBitmap) {
                 mResultsBitmap = resultBitmap;
+
+                if (mResultsBitmap == null){
+                    Toast.makeText(EmojifyMeActivity.this, "No Face Detected", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 ImageView imageView = findViewById(R.id.captured_image);
                 imageView.setImageBitmap(mResultsBitmap);

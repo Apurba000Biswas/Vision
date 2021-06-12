@@ -18,4 +18,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, EmojifyMeActivity.class);
         startActivity(intent);
     }
+
+    public void onQRCodScanClicked(View view) {
+        Intent intent = new Intent(this, EmojifyMeActivity.class);
+        startActivity(intent);
+    }
 }

@@ -142,14 +142,7 @@ public class Emojifier {
 
     }
 
-    /**
-     * Combines the original picture with the emoji bitmaps
-     *
-     * @param backgroundBitmap The original picture
-     * @param emojiBitmap      The chosen emoji
-     * @param face             The detected face
-     * @return The final bitmap, including the emojis over the faces
-     */
+
     private static Bitmap addBitmapToFace(Bitmap backgroundBitmap, Bitmap emojiBitmap, Face face) {
 
         // Initialize the results bitmap to be a mutable copy of the original image
