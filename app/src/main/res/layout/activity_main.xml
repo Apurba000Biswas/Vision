@@ -63,7 +63,7 @@
             android:layout_height="match_parent"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="@string/qr_code_scan"
+            android:text="@string/image_capture"
             android:textColor="@android:color/black"
             android:textSize="@dimen/_10sdp" />
 
