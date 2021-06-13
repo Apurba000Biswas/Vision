@@ -1,12 +1,15 @@
 package com.apurba.vision
 
 import android.Manifest
+import android.app.ActivityOptions
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
-import android.widget.Toast
+import android.webkit.MimeTypeMap
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -15,23 +18,26 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.activity_bar_code_scan.*
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_image_capture.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class BarCodeScanActivity : AppCompatActivity() {
+class CaptureImageActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
 
     private lateinit var outputDirectory: File
     private lateinit var cameraExecutor: ExecutorService
 
 
+    private lateinit var previewUrl: String;
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_bar_code_scan)
+        setContentView(R.layout.activity_image_capture)
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -48,6 +54,23 @@ class BarCodeScanActivity : AppCompatActivity() {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
+        outputDirectory.listFiles { file ->
+            EXTENSION_WHITELIST.contains(file.extension.toUpperCase(Locale.ROOT))
+        }?.maxOrNull()?.let {
+            showImagePreview(Uri.fromFile(it))
+        }
+
+        findViewById<ImageView>(R.id.iv_image_preview).setOnClickListener {
+            val imageViewIntent = Intent(this, ImageViewActivity::class.java)
+
+            val bundle: Bundle = ActivityOptions
+                .makeSceneTransitionAnimation(
+                    this, it, it.transitionName
+                )
+                .toBundle()
+            imageViewIntent.putExtra("uri", previewUrl)
+            startActivity(imageViewIntent, bundle)
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -76,6 +99,7 @@ class BarCodeScanActivity : AppCompatActivity() {
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
+
         // Set up image capture listener, which is triggered after photo has
         // been taken
         imageCapture.takePicture(
@@ -85,13 +109,34 @@ class BarCodeScanActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedUri = Uri.fromFile(photoFile)
+                    val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
                     val msg = "Photo capture succeeded: $savedUri"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
+
+                    showImagePreview(savedUri);
+
+                    // If the folder selected is an external media directory, this is
+                    // unnecessary but otherwise other apps will not be able to access our
+                    // images unless we scan them using [MediaScannerConnection]
+                    val mimeType = MimeTypeMap.getSingleton()
+                        .getMimeTypeFromExtension(photoFile.extension)
+                    MediaScannerConnection.scanFile(
+                        this@CaptureImageActivity,
+                        arrayOf(photoFile.absolutePath),
+                        arrayOf(mimeType)
+                    ) { _, uri ->
+                        Log.d(TAG, "Image capture scanned into media store: $uri")
+                    }
                 }
             })
+    }
 
+    private fun showImagePreview(uri: Uri){
+        previewUrl = uri.toString()
+        Picasso.get()
+            .load(uri)
+            .placeholder(R.mipmap.ic_launcher_round)
+            .into(findViewById<ImageView>(R.id.iv_image_preview))
     }
 
     private fun startCamera() {
@@ -137,10 +182,10 @@ class BarCodeScanActivity : AppCompatActivity() {
     private fun getOutputDirectory(): File {
         val mediaDir = externalMediaDirs.firstOrNull()?.let {
             File(it, resources.getString(R.string.app_name)).apply { mkdirs() } }
-        return if (mediaDir != null && mediaDir.exists())
-            mediaDir else filesDir
+        return if (mediaDir != null && mediaDir.exists()) mediaDir else filesDir
     }
 
+    
 
     override fun onDestroy() {
         super.onDestroy()
@@ -148,10 +193,11 @@ class BarCodeScanActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "CameraXBasic"
+        private const val TAG = "Vision"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+        private val EXTENSION_WHITELIST = arrayOf("JPG")
     }
 
 }

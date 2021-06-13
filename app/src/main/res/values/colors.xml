@@ -6,4 +6,8 @@
 
     <!-- ripple Color -->
     <color name="colorRippleDark">#8167a6</color>
+
+    <color name="icActive">#FFFFFFFF</color>
+    <color name="icFocused">#DDFFFFFF</color>
+    <color name="icPressed">#AAFFFFFF</color>
 </resources>
