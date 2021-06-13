@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -14,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_image_capture.*
 
 class CaptureImageActivity : AppCompatActivity() {
 
-    private lateinit var previewUrl: String;
+    private lateinit var previewUrl: String
     private lateinit var cameraXUtils : CameraXUtils
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +25,6 @@ class CaptureImageActivity : AppCompatActivity() {
         cameraXUtils = CameraXUtils(this)
         cameraXUtils.create(viewFinder)
 
-        // Request camera permissions
         if (allPermissionsGranted()) {
             cameraXUtils.startCamera(this)
         } else {
@@ -32,7 +32,7 @@ class CaptureImageActivity : AppCompatActivity() {
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
-        cameraXUtils.getPreviewLastImageCapturedUri()?.let { showImagePreview(it) };
+        cameraXUtils.getPreviewLastImageCapturedUri()?.let { showImagePreview(it) }
 
         camera_capture_button.setOnClickListener { cameraXUtils.takePhoto(object : CameraXUtils.ImageCapturedListener{
             override fun onImageCaptured(uri: Uri) {
@@ -41,15 +41,19 @@ class CaptureImageActivity : AppCompatActivity() {
         }) }
 
         iv_image_preview.setOnClickListener {
-            val imageViewIntent = Intent(this, ImageViewActivity::class.java)
-            val bundle: Bundle = ActivityOptions
-                .makeSceneTransitionAnimation(
-                    this, it, it.transitionName
-                )
-                .toBundle()
-            imageViewIntent.putExtra("uri", previewUrl)
-            startActivity(imageViewIntent, bundle)
+            startFullImageViewActivity(it)
         }
+    }
+
+    private fun startFullImageViewActivity(view : View){
+        val imageViewIntent = Intent(this, ImageViewActivity::class.java)
+        val bundle: Bundle = ActivityOptions
+            .makeSceneTransitionAnimation(
+                this, view, view.transitionName
+            )
+            .toBundle()
+        imageViewIntent.putExtra("uri", previewUrl)
+        startActivity(imageViewIntent, bundle)
     }
 
     override fun onRequestPermissionsResult(
