@@ -140,7 +140,7 @@ class BarCodeScanActivity : AppCompatActivity() {
         return if (mediaDir != null && mediaDir.exists())
             mediaDir else filesDir
     }
-    
+
 
     override fun onDestroy() {
         super.onDestroy()
