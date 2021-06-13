@@ -20,6 +20,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onQRCodScanClicked(View view) {
+        Intent intent = new Intent(this, QRCodeScanActivity.class);
+        startActivity(intent);
+    }
+
+    public void onImageCaptureClicked(View view) {
         Intent intent = new Intent(this, CaptureImageActivity.class);
         startActivity(intent);
     }

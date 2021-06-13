@@ -42,6 +42,35 @@
 
     <androidx.cardview.widget.CardView
         android:layout_marginTop="@dimen/_10sdp"
+        android:id="@+id/cv_image_capture"
+        android:layout_width="@dimen/_160sdp"
+        android:layout_height="@dimen/_80sdp"
+        android:layout_gravity="center_horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="@drawable/ripple_dark"
+        android:onClick="onImageCaptureClicked"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/submit_button_google_sign_up"
+        card_view:cardBackgroundColor="@android:color/white"
+        card_view:cardCornerRadius="@dimen/_15sdp"
+        card_view:cardElevation="@dimen/_3sdp">
+
+        <TextView
+            android:id="@+id/image_capture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="@string/image_capture"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/_10sdp" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_marginTop="@dimen/_10sdp"
         android:id="@+id/cv_bar_code_scan"
         android:layout_width="@dimen/_160sdp"
         android:layout_height="@dimen/_80sdp"
@@ -51,8 +80,8 @@
         android:foreground="@drawable/ripple_dark"
         android:onClick="onQRCodScanClicked"
         app:cardUseCompatPadding="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/submit_button_google_sign_up"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cv_image_capture"
         card_view:cardBackgroundColor="@android:color/white"
         card_view:cardCornerRadius="@dimen/_15sdp"
         card_view:cardElevation="@dimen/_3sdp">
@@ -63,7 +92,7 @@
             android:layout_height="match_parent"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="@string/image_capture"
+            android:text="@string/scan_qr_code"
             android:textColor="@android:color/black"
             android:textSize="@dimen/_10sdp" />
 

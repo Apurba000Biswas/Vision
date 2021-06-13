@@ -2,7 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
     package="com.apurba.vision">
-    <!-- Enable instant app support -->
+
+    <meta-data
+        android:name="com.google.mlkit.vision.DEPENDENCIES"
+        android:value="face" />
+
+    <uses-feature android:name="android.hardware.camera.any" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <dist:module dist:instant="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,7 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ImageViewActivity"></activity>
+        <activity android:name=".QRCodeScanActivity"></activity>
+        <activity android:name=".ImageViewActivity" />
         <activity android:name=".CaptureImageActivity" />
         <activity android:name=".EmojifyMeActivity" />
         <activity android:name=".MainActivity">
@@ -40,16 +52,5 @@
                 android:resource="@xml/file_paths" />
         </provider>
     </application>
-
-    <meta-data
-        android:name="com.google.mlkit.vision.DEPENDENCIES"
-        android:value="face" />
-
-    <uses-feature android:name="android.hardware.camera.any" />
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <dist:module dist:instant="true" />
 
 </manifest>

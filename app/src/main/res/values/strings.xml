@@ -8,4 +8,5 @@
     <string name="qr_code_scan">QR code Scan</string>
     <string name="image_capture">Capture Image</string>
     <string name="image_transition">image_view</string>
+    <string name="scan_qr_code">Scan Qr Code</string>
 </resources>
