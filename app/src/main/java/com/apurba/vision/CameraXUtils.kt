@@ -1,18 +1,17 @@
 package com.apurba.vision
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import com.google.mlkit.vision.common.InputImage
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -46,7 +45,11 @@ class CameraXUtils(private val context : Context) {
         return null
     }
 
-    fun startCamera(lifecycleOwner: LifecycleOwner) {
+    fun startCamera(lifecycleOwner: LifecycleOwner){
+        startCamera(lifecycleOwner, null)
+    }
+
+    fun startCamera(lifecycleOwner: LifecycleOwner, analyzerXListener: ImageCaptureWithAnalyzerListener?) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
         cameraProviderFuture.addListener(Runnable {
@@ -63,6 +66,13 @@ class CameraXUtils(private val context : Context) {
             imageCapture = ImageCapture.Builder()
                 .build()
 
+
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .build()
+                .also {
+                    it.setAnalyzer(cameraExecutor, ImageAnalyzerX(analyzerXListener))
+                }
+
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -72,7 +82,7 @@ class CameraXUtils(private val context : Context) {
 
                 // Bind use cases to camera
                 cameraProvider.bindToLifecycle(
-                    lifecycleOwner, cameraSelector, preview, imageCapture)
+                    lifecycleOwner, cameraSelector, preview, imageCapture, imageAnalyzer)
 
             } catch(exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
@@ -133,6 +143,26 @@ class CameraXUtils(private val context : Context) {
 
     interface ImageCapturedListener{
         fun onImageCaptured(uri: Uri)
+    }
+
+    interface ImageCaptureWithAnalyzerListener{
+        fun onImageCapturedWithAnalyzer(image : InputImage)
+    }
+
+
+    private class ImageAnalyzerX(private val analyzerXListener : ImageCaptureWithAnalyzerListener?) : ImageAnalysis.Analyzer{
+
+        override fun analyze(imageProxy: ImageProxy) {
+
+            @androidx.camera.core.ExperimentalGetImage
+            val mediaImage = imageProxy.image
+            @androidx.camera.core.ExperimentalGetImage
+            if (mediaImage != null) {
+                val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                analyzerXListener?.onImageCapturedWithAnalyzer(image)
+            }
+        }
+
     }
 
 }
